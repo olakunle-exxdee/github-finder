@@ -1,61 +1,63 @@
-import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const UserDetails = () => {
   const { username } = useParams();
-  const [searchData, setSearchData] = useState("");
+  const [user, setUser] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get(`https://api.github.com/users/${username}`)
-      .then((response) => setSearchData(response.data))
-      .catch((error) => console.log(error));
+  const fetchUser = useCallback(async () => {
+    const response = await fetch(`https://api.github.com/user/${username}`);
+    const data = await response.json();
+    setUser(data);
   }, [username]);
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   return (
-    <div className="userdetails">
-      <Link to="/users">back</Link>
-      <header className="header">
-        <div className="userdetails-img">
-          <img src={searchData.avatar_url} alt="" />
+    <div className="container">
+      <Link to="/" className="links">
+        back
+      </Link>
+
+      <div className="img">
+        <img src={user.avatar_url} alt="" />
+      </div>
+      <div className="content">
+        <div className="login">
+          {user.name ? (
+            <h3 className="name">{user.name}</h3>
+          ) : (
+            <h3 className="name">Not found</h3>
+          )}
+          <p className="at">@{user.login}</p>
         </div>
-        <div className="userdetails-content">
-          <div className="login">
-            {searchData.name ? (
-              <h3 className="name">{searchData.name}</h3>
-            ) : (
-              <h3 className="name">Not found</h3>
-            )}
-            <p className="at">@{searchData.login}</p>
+        <div className="follow">
+          <div className="follower">
+            <p>Followers</p>
+            <h1>{user.followers}</h1>
           </div>
-          <div className="follow">
-            <div className="follower">
-              <p>Followers</p>
-              <h1>{searchData.followers}</h1>
-            </div>
-            <div className="following">
-              <p> Following</p>
-              <h1>{searchData.following}</h1>
-            </div>
-            <div className="repo">
-              <p>repo</p>
-              <h1>{searchData.public_repos}</h1>
-            </div>
+          <div className="following">
+            <p> Following</p>
+            <h1>{user.following}</h1>
           </div>
-          <div className="div-url">
-            <a
-              className="url"
-              href={searchData.html_url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              go to profile
-            </a>
+          <div className="repo">
+            <p>repo</p>
+            <h1>{user.public_repos}</h1>
           </div>
         </div>
-      </header>
+        <div className="div-url">
+          <a
+            className="url"
+            href={user.html_url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            go to profile
+          </a>
+        </div>
+      </div>
     </div>
   );
 };

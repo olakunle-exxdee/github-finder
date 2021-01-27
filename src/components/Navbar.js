@@ -6,7 +6,7 @@ const Navbar = () => {
     <div className="list-wrapper">
       <ul className="list">
         <Link to="/">Home</Link>
-        <Link to="/users">Users</Link>
+        <Link to="/about">About</Link>
       </ul>
     </div>
   );
